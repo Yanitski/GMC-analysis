@@ -178,7 +178,7 @@ def param (galaxyname,data):
      plt.savefig(galaxyname+'_dist.png')
 
 # This is some code from the powerlaw template.
-def data(galaxyname,data):
+def data(galaxyname,data,div):
      
      #import libraries
      import astropy
@@ -204,36 +204,43 @@ def data(galaxyname,data):
      rpgal = np.asarray(rgal)
 
      #add those distances to the fits table
-     col_rgal=Column(name='RADIUS_KPC',data=(rgal))
+     col_rgal=Column(name='RADIUS_PC',data=(rgal))
      t.add_column(col_rgal)
 
      # Sort the masses according to galactocentric radius.
-     
+     i_sorted = np.argsort(rgal)
+     rgal_sorted = np.asarray(rgal[i_sorted])
+     mass = t['MASS_EXTRAP'].data
+     mass_sorted = mass[i_sorted]
 
      # Create a loop to calculate the bin boundaries.
-     mass = t['MASS_EXTRAP'].data
-     totmass = np.sum(mass)/6
+     totmass = np.sum(mass)/div
+     edge_f = 1.1*np.max(rgal_sorted)
+     edges = np.zeros(div-1)
      start = 0
-     [e1,e2,e3,e4,e5,e6] = [0,0,0,0,0,0]
-     edges = [e1,e2,e3,e4,e5,e6]
      e=0
-     for i in range(len(mass)):
-          if np.sum(mass[start:i])>totmass:
-               edges[e]=0.5*(rgal[i]+rgal[i+1])
-               start=i+1
+     for i in range(len(mass_sorted)):
+          if np.sum(mass_sorted[start:i])>totmass:
+               edges[e]=0.5*(rgal_sorted[i]+rgal_sorted[i-1])
+               start=i
                e=e+1
-     inneredge=np.array([0, e1, e2, e3, e4, e5])
-     outeredge=np.array([e1, e2, e3, e4, e5, e6])
+     #edges = np.asarray(edges)
+     #edges.astype(int)
+     #print edges,edge_f
+     inneredge = np.array([0, edges[:]])
+     outeredge = np.array([edges[:], edge_f])
+     print outeredge, inneredge
 
      # Create a template for a new FITS table.
-     column_names=['Inner edge (kpc)', 'Outer edge (kpc)', 'GMC index', 'R', 'p', 'Truncation mass (M$_\odot$)', 'Largest cloud (M$_\odot$)', '5th largest cloud (M$_\odot$)']
+     column_names=['Inner edge (pc)', 'Outer edge (pc)', 'GMC index', 'R', 'p', 'Truncation mass ($M_\mathrm{\odot}$)', 'Largest cloud ($M_\mathrm{\odot}$)', '5th largest cloud ($M_\mathrm{\odot}$)']
      column_types=['f4', 'f4', 'f4', 'f4', 'f4', 'f4', 'f4', 'f4']
      table=Table(names=column_names, dtype=column_types)
 
      for inneredge, outeredge in zip(inneredge, outeredge):
           
-         idx=np.where((t['RADIUS_KPC']>=inneredge)&(t['RADIUS_KPC']<outeredge))
+         idx=np.where((t['RADIUS_PC']>=inneredge)&(t['RADIUS_PC']<outeredge))
          mass=t['MASS_EXTRAP'][idx].data
+         print len(mass)
          #don't have to create an index for the xmin mass - defined in the fit_subset
          fit=powerlaw.Fit(mass)
          fit_subset=powerlaw.Fit(mass, xmin=3e5)
@@ -244,9 +251,9 @@ def data(galaxyname,data):
          table[-1]['GMC index']=-fit_subset.alpha
          table[-1]['R']=R
          table[-1]['p']=p
-         table[-1]['Truncation mass ($M_\odot$)']=1/fit_subset.truncated_power_law.parameter2
-         table[-1]['Largest cloud ($M_\odot$)']=mass.max
-         table[-1]['5th largest cloud ($M_\odot$)']=np.sort(t['MASS_EXTRAP'][idx])[-5]
+         table[-1]['Truncation mass ($M_\mathrm{\odot}$)']=1/fit_subset.truncated_power_law.parameter2
+         table[-1]['Largest cloud ($M_\mathrm{\odot}$)']=np.amax(mass)
+         table[-1]['5th largest cloud ($M_\mathrm{\odot}$)']=np.sort(t['MASS_EXTRAP'][idx])[-5]
 
          print(table)
          #print(-fit.alpha, -fit_subset.alpha, R, p, 1/fit_subset.truncated_power_law.parameter2)
