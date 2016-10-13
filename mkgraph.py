@@ -1,4 +1,4 @@
-def graphs (galaxyname,data,ofile):
+def graphs (galaxyname,data):
 # This is a module to save data in a series of graphs.
 
      # import the libraries that are needed.
@@ -57,9 +57,9 @@ def graphs (galaxyname,data,ofile):
 
      # Reduce the size of the labels and save the figure
      plt.tight_layout()
-     plt.savefig(ofile)
+     plt.savefig(galaxyname+'_trend.png')
 
-def mapgmc (galaxyname,data,imgfile,ofile):
+def mapgmc (galaxyname,data,imgfile):
 # This is a module to plot the location of the GMCs in a given galaxy on a map of the galaxy.
 
      # import the libraries that are needed.
@@ -88,9 +88,9 @@ def mapgmc (galaxyname,data,imgfile,ofile):
      img.show_markers(xval,yval,edgecolor='white',facecolor='none',marker='D',s=10,alpha=0.7)
 
      # Save the figure.
-     img.save(ofile)
+     img.save(galaxyname+'_map.png')
 
-def param (galaxyname,data,ofile1,ofile2):
+def param (galaxyname,data):
 # This is a module that will plot graphs of the clouds' virial parameter, surface density,
 # and linewidth on a one-parsec scale to its galactocentric radius.
 
@@ -115,12 +115,11 @@ def param (galaxyname,data,ofile1,ofile2):
      yval = cpropstable['YPOS']
      rad = gxy.radius(ra=xval,dec=yval)
      rad = rad.to(u.kpc)
-     print np.amax(rad)
 
      # Calculate the virial parameter, surface density, and linewidth on a one-parsec scale.
      alpha = vmass/lmass
      sigma = lmass/(radrms**2)
-     lwo = lw/((radrms*1000)**0.5)
+     lwo = lw/((radrms)**0.5)
 
      # Separate the data into bins, then calculate the mean values.
      binaxis = [0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5, 10.5]
@@ -135,18 +134,20 @@ def param (galaxyname,data,ofile1,ofile2):
      
      plt.subplot(1,3,1)
      l1 = plt.plot (rad,alpha)
+     plt.yscale('log')
      plt.setp (l1,marker='D',markersize=5,linestyle='None',color='b',label='GMC')
      plt.errorbar(binaxis,alpha_medians,xerr=0.5,linestyle='None',marker='o',color='k',lw=5,alpha=0.7,label='Median')
-#     plt.legend (loc=2)
+     plt.legend (loc=0)
      plt.xlabel(r'$R\ (\mathrm{kpc})$',fontsize=20)
      plt.ylabel(r'$\alpha$',fontsize=20)
      plt.title('Virial Parameter for GMCs in '+galaxyname,fontsize=20)
      
      plt.subplot(1,3,2)
      l1 = plt.plot(rad,sigma)
+     plt.yscale('log')
      plt.setp (l1,marker='D',markersize=5,linestyle='None',color='b',label='GMC')
      plt.errorbar(binaxis,sigma_medians,xerr=0.5,linestyle='None',marker='o',color='k',lw=5,alpha=0.7,label='Median')
-#     plt.legend (loc=2)
+     plt.legend (loc=0)
      plt.xlabel(r'$R\ (\mathrm{kpc})$',fontsize=20)
      plt.ylabel(r'$\Sigma\ (\frac{M_\mathrm{\odot}}{\mathrm{pc}^{2}})$',fontsize=20)
      plt.title('Luminous Mass for GMCs in '+galaxyname,fontsize=20)
@@ -155,23 +156,120 @@ def param (galaxyname,data,ofile1,ofile2):
      l1 = plt.plot(rad,lwo)
      plt.setp (l1,marker='D',markersize=5,linestyle='None',color='b',label='GMC')
      plt.errorbar(binaxis,lwo_medians,xerr=0.5,linestyle='None',marker='o',color='k',lw=5,alpha=0.7,label='Median')
-#     plt.legend (loc=2)
+     plt.legend (loc=0)
      plt.xlabel(r'$R\ (\mathrm{kpc})$',fontsize=20)
      plt.ylabel(r'$\sigma_{o}\ (\frac{\mathrm{km}}{\mathrm{s}})$',fontsize=20)
      plt.title('Linewidth for GMCs in '+galaxyname,fontsize=20)
      
      plt.tight_layout()
-     plt.savefig(ofile1)
+     plt.savefig(galaxyname+'_param.png')
 
      # Make a figure of the median mass for a given radius.
      figure2 = plt.figure(figsize=(8,8))
      
      plt.errorbar(binaxis,bin_means,xerr=0.5,linestyle='None',marker='D',color='b',label='Mean')
      plt.errorbar(binaxis,bin_medians,xerr=0.5,linestyle='None',marker='D',color='g',label='Median')
-     plt.legend (loc=9)
+     plt.legend (loc=0)
      plt.xlabel(r'$R\ (\mathrm{kpc})$',fontsize=20)
      plt.ylabel(r'$M_{\mathrm{lum}}\ (M_{\odot})$',fontsize=20)
      plt.title('GMC Mass Distribution in '+galaxyname,fontsize=20)
      
      plt.tight_layout()
-     plt.savefig(ofile2)
+     plt.savefig(galaxyname+'_dist.png')
+
+# This is some code from the powerlaw template.
+def data(galaxyname,data):
+     
+     #import libraries
+     import astropy
+     import astropy.table
+     import numpy as np
+     from astropy.table import Table
+     from astropy.table import Column
+     import matplotlib.pyplot as plt
+     import powerlaw
+     from galaxies import Galaxy
+     import astropy.units as u
+
+     #get info about m83
+     mygalaxy=Galaxy(galaxyname)
+     print(mygalaxy)
+
+     #load fits file
+     t=Table.read(data)
+
+     #find cloud's galactocentric distance
+     rgal=mygalaxy.radius(ra=(t['XPOS']), dec=(t['YPOS']))
+     rgal=rgal.to(u.pc)
+     rpgal = np.asarray(rgal)
+
+     #add those distances to the fits table
+     col_rgal=Column(name='RADIUS_KPC',data=(rgal))
+     t.add_column(col_rgal)
+
+     # Sort the masses according to galactocentric radius.
+     
+
+     # Create a loop to calculate the bin boundaries.
+     mass = t['MASS_EXTRAP'].data
+     totmass = np.sum(mass)/6
+     start = 0
+     [e1,e2,e3,e4,e5,e6] = [0,0,0,0,0,0]
+     edges = [e1,e2,e3,e4,e5,e6]
+     e=0
+     for i in range(len(mass)):
+          if np.sum(mass[start:i])>totmass:
+               edges[e]=0.5*(rgal[i]+rgal[i+1])
+               start=i+1
+               e=e+1
+     inneredge=np.array([0, e1, e2, e3, e4, e5])
+     outeredge=np.array([e1, e2, e3, e4, e5, e6])
+
+     # Create a template for a new FITS table.
+     column_names=['Inner edge (kpc)', 'Outer edge (kpc)', 'GMC index', 'R', 'p', 'Truncation mass (M$_\odot$)', 'Largest cloud (M$_\odot$)', '5th largest cloud (M$_\odot$)']
+     column_types=['f4', 'f4', 'f4', 'f4', 'f4', 'f4', 'f4', 'f4']
+     table=Table(names=column_names, dtype=column_types)
+
+     for inneredge, outeredge in zip(inneredge, outeredge):
+          
+         idx=np.where((t['RADIUS_KPC']>=inneredge)&(t['RADIUS_KPC']<outeredge))
+         mass=t['MASS_EXTRAP'][idx].data
+         #don't have to create an index for the xmin mass - defined in the fit_subset
+         fit=powerlaw.Fit(mass)
+         fit_subset=powerlaw.Fit(mass, xmin=3e5)
+         R,p=fit_subset.distribution_compare('power_law', 'truncated_power_law')
+         table.add_row()
+         table[-1]['Inner edge (pc)']=inneredge
+         table[-1]['Outer edge (pc)']=outeredge
+         table[-1]['GMC index']=-fit_subset.alpha
+         table[-1]['R']=R
+         table[-1]['p']=p
+         table[-1]['Truncation mass ($M_\odot$)']=1/fit_subset.truncated_power_law.parameter2
+         table[-1]['Largest cloud ($M_\odot$)']=mass.max
+         table[-1]['5th largest cloud ($M_\odot$)']=np.sort(t['MASS_EXTRAP'][idx])[-5]
+
+         print(table)
+         #print(-fit.alpha, -fit_subset.alpha, R, p, 1/fit_subset.truncated_power_law.parameter2)
+         
+     table.write(galaxyname+'_data.fits', overwrite=True)
+
+# This is a module to analyze whether a galaxy's GMC distribution is truncated.
+def pwrlaw(galaxyname, data):
+
+     import powerlaw
+     from astropy.table import Table
+     import matplotlib.pyplot as plt
+     import numpy as np
+
+     t = Table.read(data)
+     mass = t['MASS_EXTRAP'].data
+     myfit = powerlaw.Fit(mass)
+     R, p = myfit.distribution_compare('power_law','truncated_power_law')
+     fig = myfit.truncated_power_law.plot_ccdf(label='Truncated\nPower Law')
+     myfit.power_law.plot_ccdf(label='Power Law',ax=fig)
+     myfit.plot_ccdf(drawstyle='steps',label='Data',ax=fig)
+     plt.legend(loc=0)
+     plt.title('GMC Mass Distribution')
+     plt.xlabel(r'$M_\mathrm{\odot}$')
+     plt.ylabel('CCDF')
+     plt.savefig(galaxyname+'_power_law.png')
