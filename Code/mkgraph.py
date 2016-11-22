@@ -222,7 +222,7 @@ def data(galaxyname,data,n_bins=1):
      start = 0
      mass_equiv = [0]    #indeces for the sorted mass bins of equal mass
      mass_area = [0]    #indeces for the sorted mass bins of equal area
-     rgal_equiv = [0,2**0.5,2,6**0.5]
+     rgal_equiv = [0,2,8**0.5,12**0.5,4,20**0.5,24**0.5,28**0.5,32**0.5,6]
      r = 1               #equal-area radial index
      e = 0               #edge index
      f = 0               #loop flag to skip the mass_area loop
@@ -236,8 +236,6 @@ def data(galaxyname,data,n_bins=1):
                e = e+1
           #Find the indeces for bins of equal area (4pi kpc^2)
           if rgal_sorted[i]>rgal_equiv[r] and not f:
-               if c<3:
-                    f = 1
                if rgal_sorted[i]<rgal_equiv[3] and not f:     
                     mass_area = np.append(mass_area,i)
                     r = r+1
@@ -245,7 +243,6 @@ def data(galaxyname,data,n_bins=1):
                if rgal_sorted[i]>rgal_equiv[3]:
                     f=1
                     mass_area = np.append(mass_area,i)
-          c = c+1
      mass_equiv = np.append(mass_equiv,i)
      inneredge = np.concatenate(([0.000000],edges))
      outeredge = np.concatenate((edges,[edge_f]))
@@ -287,32 +284,36 @@ def data(galaxyname,data,n_bins=1):
           fig = myfit.truncated_power_law.plot_ccdf(label='Truncated\nPower Law')
           myfit.power_law.plot_ccdf(label='Power Law',ax=fig)
           myfit.plot_ccdf(drawstyle='steps',label='Data',ax=fig)
-          
+
           # Format the plot.
           plt.legend(loc=0)
           plt.title(galaxyname+'Equal-mass Mass Distribution, bin '+repr(i+1))
           plt.ylim(ymin=10**-3)
           plt.xlabel(r'$M_\mathrm{\odot}$')
           plt.ylabel('CCDF')
-          plt.text(np.median(binmass)*2,10**-2.8,'$R_{gal}$ = %5.4f kpc to %5.4f kpc\n$R$ = %5.4f\n$p$ = %5.4f'%(inneredge[i],outeredge[i],R,p))
+          plt.text(0.45,0.05,'$R_{gal}$ = %5.4f kpc to %5.4f kpc\n$R$ = %5.4f\n$p$ = %5.4f'%(inneredge[i],outeredge[i],R,p),ha='left',va='bottom',transform=fig.transAxes)
           plt.savefig('../Data/'+galaxyname+'_power_law_equal_mass_'+repr(i+1)+'.png')
           plt.close()
 
      # Plot the mass distribution trend for equal-area bins.
      for i in range(len(mass_area)-1):
-          binmass = mass_sorted[mass_area[i]:mass_area[i+1]]
-          myfit = powerlaw.Fit(binmass)
-          R, p = myfit.distribution_compare('power_law','truncated_power_law')
-          fig = myfit.truncated_power_law.plot_ccdf(label='Truncated\nPower Law')
-          myfit.power_law.plot_ccdf(label='Power Law',ax=fig)
-          myfit.plot_ccdf(drawstyle='steps',label='Data',ax=fig)
-          
-          # Format the plot.
-          plt.legend(loc=0)
-          plt.title(galaxyname+'Equal-area Mass Distribution, bin '+repr(i+1))
-          plt.ylim(ymin=10**-3)
-          plt.xlabel(r'$M_\mathrm{\odot}$')
-          plt.ylabel('CCDF')
-          plt.text(np.median(binmass)*2,10**-2.8,'$R_{gal}$ = %5.4f kpc to %5.4f kpc\n$R$ = %5.4f\n$p$ = %5.4f'%(rgal_equiv[i],rgal_equiv[i+1],R,p))
-          plt.savefig('../Data/'+galaxyname+'_power_law_equal_area_'+repr(i+1)+'.png')
-          plt.close()
+          f = 0     #loop flag
+          if mass_area[i+1]-mass_area[i]<3:
+               f = 1
+          if not f:
+               binmass = mass_sorted[mass_area[i]:mass_area[i+1]]
+               myfit = powerlaw.Fit(binmass)
+               R, p = myfit.distribution_compare('power_law','truncated_power_law')
+               fig = myfit.truncated_power_law.plot_ccdf(label='Truncated\nPower Law')
+               myfit.power_law.plot_ccdf(label='Power Law',ax=fig)
+               myfit.plot_ccdf(drawstyle='steps',label='Data',ax=fig)
+
+               # Format the plot.
+               plt.legend(loc=0)
+               plt.title(galaxyname+'Equal-area Mass Distribution, bin '+repr(i+1))
+               plt.ylim(ymin=10**-3)
+               plt.xlabel(r'$M_\mathrm{\odot}$')
+               plt.ylabel('CCDF')
+               plt.text(0.45,0.05,'$R_{gal}$ = %5.4f kpc to %5.4f kpc\n$R$ = %5.4f\n$p$ = %5.4f'%(rgal_equiv[i],rgal_equiv[i+1],R,p),ha='left',va='bottom',transform=fig.transAxes)
+               plt.savefig('../Data/'+galaxyname+'_power_law_equal_area_'+repr(i+1)+'.png')
+               plt.close()

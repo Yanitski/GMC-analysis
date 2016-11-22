@@ -39,8 +39,8 @@ mkgraph.data('NGC4254','NGC4254_co21_cube_props_clfind.fits',5)
 #NGC4303
 mkgraph.graphs ('NGC4303','NGC4303_co21_cube_props_clfind.fits')
 mkgraph.mapgmc ('NGC4303','NGC4303_co21_cube_props_clfind.fits','NGC4303_co21_cube_tpeak.fits')
-#mkgraph.param ('NGC4303','NGC4303_co21_cube_props_clfind.fits')
-#mkgraph.data('NGC4303','NGC4303_co21_cube_props_clfind.fits')
+mkgraph.param ('NGC4303','NGC4303_co21_cube_props_clfind.fits')
+mkgraph.data('NGC4303','NGC4303_co21_cube_props_clfind.fits',5)
 
 #NGC4321
 mkgraph.graphs ('NGC4321','NGC4321_co21_cube_props_clfind.fits')
