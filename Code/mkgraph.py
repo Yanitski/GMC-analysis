@@ -91,7 +91,7 @@ def mapgmc (galaxyname,data,imgfile):
      # Save the figure.
      img.save('../Maps/'+galaxyname+'_map.png')
 
-def param (galaxyname,data):
+def param (galaxyname,data,r_nuc=0):
 # This is a module that will plot graphs of the clouds' virial parameter, surface density,
 # and linewidth on a one-parsec scale to its galactocentric radius.
 
@@ -112,29 +112,66 @@ def param (galaxyname,data):
      xval = cpropstable['XPOS']
      yval = cpropstable['YPOS']
      vmass = cpropstable['VIRMASS_EXTRAP_DECONV']
-     lmass = cpropstable['MASS_EXTRAP']
+     mass = cpropstable['MASS_EXTRAP']
      radrms = cpropstable['RADRMS_EXTRAP_DECONV']
-     rad = gxy.radius(ra=xval,dec=yval)
-     rad = rad.to(u.kpc)
+     distance = cpropstable['DIST_PC']
+     distance = np.nanmax(distance)/1000000
+     rgal = gxy.radius(ra=xval,dec=yval)
+     rgal = rgal.to(u.kpc)
+
+     # Sort the masses according to galactocentric radius.
+     i_sorted = np.argsort(rgal)
+     rgal_sorted = np.asarray(rgal[i_sorted])
+     mass_sorted = np.asarray(mass[i_sorted])
 
      # Calculate the virial parameter, surface density, and linewidth on a one-parsec scale.
+     alpha = vmass/mass
+     sigma = mass/(radrms**2)
      lwo = lw/((radrms)**0.5)
-     alpha = vmass/lmass
-     sigma = lmass/(radrms**2)
+
+     # Initialize the arrays to extract the glactic disk cloud properties.
+     rad_sorted = radrms[i_sorted]
+     alpha_sorted = np.log10(alpha[i_sorted])
+     sigma_sorted = np.log10(sigma[i_sorted])
+     lwo_sorted = lwo[i_sorted]
+     lw_sorted = lw[i_sorted]
+     mass_disk = [0]
+     rad_disk = [0]
+     alpha_disk = [0]
+     sigma_disk = [0]
+     lwo_disk = [0]
+     lw_disk = [0]
+
+     # Create a loop to extract the galactic disk GMC properties.
+     for i in range(len(mass_sorted)):
+          if rgal_sorted[i]>r_nuc:
+               if not np.isnan(alpha_sorted[i]) and not np.isnan(sigma_sorted[i]) and not np.isnan(lwo_sorted[i]) and not np.isnan(lw_sorted[i]):
+                    mass_disk = np.append(mass_disk,mass_sorted[i])
+                    rad_disk = np.append(rad_disk,rad_sorted[i])
+                    alpha_disk = np.append(alpha_disk,alpha_sorted[i])
+                    sigma_disk = np.append(sigma_disk,sigma_sorted[i])
+                    lwo_disk = np.append(lwo_disk,lwo_sorted[i])
+                    lw_disk = np.append(lw_disk,lw_sorted[i])
+     mass_disk = np.delete(mass_disk,0)
+     rad_disk = np.delete(rad_disk,0)
+     alpha_disk = np.delete(alpha_disk,0)
+     sigma_disk = np.delete(sigma_disk,0)
+     lwo_disk = np.delete(lwo_disk,0)
+     lw_disk = np.delete(lw_disk,0)
 
      # Separate the data into bins, then calculate the mean values.
      binaxis = [0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5, 10.5]
-     bin_means,bin_edges,binnumber = sps.binned_statistic(rad,lmass,statistic='mean',bins=[0,1,2,3,4,5,6,7,8,9,10,11])
-     bin_medians,bin_edges,binnumber = sps.binned_statistic(rad,lmass,statistic='median',bins=[0,1,2,3,4,5,6,7,8,9,10,11])
-     lwo_medians,bin_edges,binnumber = sps.binned_statistic(rad,lwo,statistic=np.nanmedian,bins=[0,1,2,3,4,5,6,7,8,9,10,11])
-     alpha_medians,bin_edges,binnumber = sps.binned_statistic(rad,alpha,statistic=np.nanmedian,bins=[0,1,2,3,4,5,6,7,8,9,10,11])
-     sigma_medians,bin_edges,binnumber = sps.binned_statistic(rad,sigma,statistic=np.nanmedian,bins=[0,1,2,3,4,5,6,7,8,9,10,11])
+     bin_means,bin_edges,binnumber = sps.binned_statistic(rgal,mass,statistic='mean',bins=[0,1,2,3,4,5,6,7,8,9,10,11])
+     bin_medians,bin_edges,binnumber = sps.binned_statistic(rgal,mass,statistic='median',bins=[0,1,2,3,4,5,6,7,8,9,10,11])
+     lwo_medians,bin_edges,binnumber = sps.binned_statistic(rgal,lwo,statistic=np.nanmedian,bins=[0,1,2,3,4,5,6,7,8,9,10,11])
+     alpha_medians,bin_edges,binnumber = sps.binned_statistic(rgal,alpha,statistic=np.nanmedian,bins=[0,1,2,3,4,5,6,7,8,9,10,11])
+     sigma_medians,bin_edges,binnumber = sps.binned_statistic(rgal,sigma,statistic=np.nanmedian,bins=[0,1,2,3,4,5,6,7,8,9,10,11])
 
      # Plot the parameters with respect to the galactocentric radius.
      figure1 = plt.figure(figsize=(18,6))
      
      plt.subplot(1,3,1)
-     l1 = plt.plot (rad,alpha)
+     l1 = plt.plot (rgal,alpha)
      plt.yscale('log')
      plt.setp (l1,marker='D',markersize=5,linestyle='None',color='b',label='GMC')
      plt.errorbar(binaxis,alpha_medians,xerr=0.5,linestyle='None',marker='o',color='k',lw=5,alpha=0.7,label='Median')
@@ -144,7 +181,7 @@ def param (galaxyname,data):
      plt.title('(a)',fontsize=20)
      
      plt.subplot(1,3,2)
-     l1 = plt.plot(rad,sigma)
+     l1 = plt.plot(rgal,sigma)
      plt.yscale('log')
      plt.setp (l1,marker='D',markersize=5,linestyle='None',color='b',label='GMC')
      plt.errorbar(binaxis,sigma_medians,xerr=0.5,linestyle='None',marker='o',color='k',lw=5,alpha=0.7,label='Median')
@@ -154,7 +191,7 @@ def param (galaxyname,data):
      plt.title('(b)',fontsize=20)
      
      plt.subplot(1,3,3)
-     l1 = plt.plot(rad,lwo)
+     l1 = plt.plot(rgal,lwo)
      plt.setp (l1,marker='D',markersize=5,linestyle='None',color='b',label='GMC')
      plt.errorbar(binaxis,lwo_medians,xerr=0.5,linestyle='None',marker='o',color='k',lw=5,alpha=0.7,label='Median')
      plt.legend(loc=0)
@@ -180,9 +217,11 @@ def param (galaxyname,data):
      plt.savefig('../Parameters/'+galaxyname+'_dist.png')
      plt.close()
 
+     return [distance,mass_disk,rad_disk,alpha_disk,sigma_disk,lwo_disk,lw_disk]
+
 # This is some code from the powerlaw template.
-def data(galaxyname,data,n_bins=1):
-     
+def data (galaxyname,data,n_bins=1,r_nuc=0):
+
      # Import the libraries.
      from galaxies import Galaxy
      from astropy.table import Table
@@ -213,7 +252,7 @@ def data(galaxyname,data,n_bins=1):
      mass = t['MASS_EXTRAP'].data
      i_sorted = np.argsort(rgal)
      rgal_sorted = np.asarray(rgal[i_sorted])
-     mass_sorted = mass[i_sorted]
+     mass_sorted = np.asarray(mass[i_sorted])
 
      # Initiate a loop to calculate the bin boundaries and the indeces of these boundaries in the sorted list.
      totmass = np.sum(mass)/n_bins
@@ -221,7 +260,8 @@ def data(galaxyname,data,n_bins=1):
      edges = np.zeros(n_bins-1)
      start = 0
      mass_equiv = [0]    #indeces for the sorted mass bins of equal mass
-     mass_area = [0]    #indeces for the sorted mass bins of equal area
+     mass_area = [0]     #indeces for the sorted mass bins of equal area
+     mass_disk = [0]     #mass array for the galactic disk GMCs
      rgal_equiv = [0,2,8**0.5,12**0.5,4,20**0.5,24**0.5,28**0.5,32**0.5,6]
      r = 1               #equal-area radial index
      e = 0               #edge index
@@ -246,6 +286,7 @@ def data(galaxyname,data,n_bins=1):
      mass_equiv = np.append(mass_equiv,i)
      inneredge = np.concatenate(([0.000000],edges))
      outeredge = np.concatenate((edges,[edge_f]))
+     mass_disk = np.delete(mass_disk,0)
 
      # Create a template for a new table.
      column_names = ['Inner edge (kpc)', 'Outer edge (kpc)', 'GMC index', 'R', 'p', 'Truncation mass ($M_\mathrm{\odot}$)', 'Largest cloud ($M_\mathrm{\odot}$)', '5th largest cloud ($M_\mathrm{\odot}$)']
