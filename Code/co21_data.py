@@ -4,6 +4,7 @@ import powerlaw
 import numpy as np
 import scipy as sp
 from scipy import constants
+from scipy.stats import maxwell
 from astropy.table import Table
 import matplotlib.pyplot as plt
 import matplotlib.mlab as mlab
@@ -215,10 +216,12 @@ plt.xlabel(r'$log_\mathrm{10}(\Sigma)$',fontsize=20)
 #lwo
 ax = plt.subplot(1,3,3)
 n,bins,patches = plt.hist(lwo_disk,bins=50,normed=True,alpha=0.6,facecolor='green')
-lwo_mu = lwo_disk.mean()
-lwo_std = lwo_disk.std()
-y = mlab.normpdf(bins,lwo_mu,lwo_std)
-plt.plot(bins,y,'k--')
+mw_param = maxwell.fit(lwo_disk)
+lwo_mu = maxwell.mean(*mw_param)
+lwo_std = maxwell.std(*mw_param)
+y = np.linspace(np.min(lwo_disk),np.max(lwo_disk),1000)
+z = maxwell.pdf(y,*mw_param)
+plt.plot(y,z,'k--')
 mpl.rc('xtick',labelsize=16)
 mpl.rc('ytick',labelsize=16)
 plt.text(0.01,0.99,'(c)',ha='left',va='top',transform=ax.transAxes,fontsize=16)
@@ -264,10 +267,12 @@ plt.xlabel(r'$log_\mathrm{10}(\Sigma)$',fontsize=20)
 #lwo
 ax = plt.subplot(1,3,3)
 n,bins,patches = plt.hist(lwo_disk_alike,bins=50,normed=True,alpha=0.6,facecolor='green')
-lwo_mu = lwo_disk_alike.mean()
-lwo_std = lwo_disk_alike.std()
-y = mlab.normpdf(bins,lwo_mu,lwo_std)
-plt.plot(bins,y,'k--')
+mw_param = maxwell.fit(lwo_disk_alike)
+lwo_mu = maxwell.mean(*mw_param)
+lwo_std = maxwell.std(*mw_param)
+y = np.linspace(np.min(lwo_disk_alike),np.max(lwo_disk_alike),1000)
+z = maxwell.pdf(y,*mw_param)
+plt.plot(y,z,'k--')
 mpl.rc('xtick',labelsize=16)
 mpl.rc('ytick',labelsize=16)
 plt.text(0.01,0.99,'(c)',ha='left',va='top',transform=ax.transAxes,fontsize=16)
