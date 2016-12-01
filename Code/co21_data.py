@@ -219,7 +219,7 @@ n,bins,patches = plt.hist(lwo_disk,bins=50,normed=True,alpha=0.6,facecolor='gree
 mw_param = maxwell.fit(lwo_disk)
 lwo_mu = maxwell.mean(*mw_param)
 lwo_std = maxwell.std(*mw_param)
-y = np.linspace(np.min(lwo_disk),np.max(lwo_disk),1000)
+y = np.linspace(0,np.max(lwo_disk),1000)
 z = maxwell.pdf(y,*mw_param)
 plt.plot(y,z,'k--')
 mpl.rc('xtick',labelsize=16)
@@ -231,57 +231,6 @@ plt.xlabel(r'$\sigma_{o}$',fontsize=20)
 
 plt.tight_layout()
 plt.savefig('./Disk/parameter_hist.png')
-plt.close()
-
-#for galaxies grouped together by the Anderson-Darling analysis>>>>>>>>>>>>>>>>>>>>>>>>>>
-parameter_alike = plt.figure(figsize=(18,6))
-
-#alpha
-ax = plt.subplot(1,3,1)
-n,bins,patches = plt.hist(alpha_disk_alike,bins=50,normed=True,alpha=0.6,facecolor='green')
-alpha_mu = alpha_disk_alike.mean()
-alpha_std = alpha_disk_alike.std()
-y = mlab.normpdf(bins,alpha_mu,alpha_std)
-plt.plot(bins,y,'k--')
-mpl.rc('xtick',labelsize=16)
-mpl.rc('ytick',labelsize=16)
-plt.text(0.01,0.99,'(a)',ha='left',va='top',transform=ax.transAxes,fontsize=16)
-plt.text(0.99,0.99,'$\mu$ = %5.4f\n$\sigma$ = %5.4f'%(alpha_mu,alpha_std),ha='right',va='top',transform=ax.transAxes,fontsize=16)
-#plt.title('Galactic Disk Virial Parameter')
-plt.xlabel(r'$log_\mathrm{10}(\alpha)$',fontsize=20)
-
-#sigma
-ax = plt.subplot(1,3,2)
-n,bins,patches = plt.hist(sigma_disk_alike,bins=50,normed=True,alpha=0.6,facecolor='green')
-sigma_mu = sigma_disk_alike.mean()
-sigma_std = sigma_disk_alike.std()
-y = mlab.normpdf(bins,sigma_mu,sigma_std)
-plt.plot(bins,y,'k--')
-mpl.rc('xtick',labelsize=16)
-mpl.rc('ytick',labelsize=16)
-plt.text(0.01,0.99,'(b)',ha='left',va='top',transform=ax.transAxes,fontsize=16)
-plt.text(0.99,0.99,'$\mu$ = %5.4f\n$\sigma$ = %5.4f'%(sigma_mu,sigma_std),ha='right',va='top',transform=ax.transAxes,fontsize=16)
-#plt.title('Galactic Disk Surface density')
-plt.xlabel(r'$log_\mathrm{10}(\Sigma)$',fontsize=20)
-
-#lwo
-ax = plt.subplot(1,3,3)
-n,bins,patches = plt.hist(lwo_disk_alike,bins=50,normed=True,alpha=0.6,facecolor='green')
-mw_param = maxwell.fit(lwo_disk_alike)
-lwo_mu = maxwell.mean(*mw_param)
-lwo_std = maxwell.std(*mw_param)
-y = np.linspace(np.min(lwo_disk_alike),np.max(lwo_disk_alike),1000)
-z = maxwell.pdf(y,*mw_param)
-plt.plot(y,z,'k--')
-mpl.rc('xtick',labelsize=16)
-mpl.rc('ytick',labelsize=16)
-plt.text(0.01,0.99,'(c)',ha='left',va='top',transform=ax.transAxes,fontsize=16)
-plt.text(0.99,0.99,'$\mu$ = %5.4f\n$\sigma$ = %5.4f'%(lwo_mu,lwo_std),ha='right',va='top',transform=ax.transAxes,fontsize=16)
-#plt.title('Galactic Disk Normalized Linewidth')
-plt.xlabel(r'$\sigma_{o}$',fontsize=20)
-
-plt.tight_layout()
-plt.savefig('./Disk/parameter_alike.png')
 plt.close()
 
 # Star formation rate and depletion time histograms.

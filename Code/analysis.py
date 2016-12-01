@@ -104,7 +104,7 @@ def mapgmc (galaxyname,data,imgfile):
 
      # Display the image of the galaxy with markers showing the locations of the GMCs.
      img.show_colorscale(cmap='gist_heat')
-     img.show_markers(xval,yval,edgecolor='blue',marker='D',s=10,alpha=1)
+     img.show_markers(xval,yval,edgecolor='cyan',marker='D',s=10,alpha=1)
 
      # Save the figure.
      img.save('../Maps/'+galaxyname+'_map.png')
