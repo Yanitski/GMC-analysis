@@ -283,7 +283,7 @@ plt.close()
 # Create a table of some galaxy properties.
 
 r_nuc = [0,1,1,1,2,1,1,1,0,0]
-properties = ['Galaxy','Distance (Mpc)','Inclination (deg)','Number of GMCs','Number of disk GMCs','R_nuc (kpc)']
+properties = ['Galaxy','Distance (Mpc)','Inclination (deg)','Number of GMCs','Number of disk GMCs','R_{nuc} (kpc)']
 column_types = ['S7','f4',int,int,int,int]
 galaxy_table = Table(names=properties,dtype=column_types)
 
@@ -296,7 +296,7 @@ for i in range(len(galaxy_names)):
      galaxy_table[-1]['Inclination (deg)'] = inclination[i]
      galaxy_table[-1]['Number of GMCs'] = len(mass)
      galaxy_table[-1]['Number of disk GMCs'] = len(mass_dict[i])
-     galaxy_table[-1]['R_nuc (kpc)'] = r_nuc[i]
+     galaxy_table[-1]['R_{nuc} (kpc)'] = r_nuc[i]
      print np.sum(mass_disk[i])
 
 galaxy_table.write('./Disk/galaxy_table.tex')
@@ -315,6 +315,7 @@ mpl.rc('xtick',labelsize=16)
 mpl.rc('ytick',labelsize=16)
 plt.xlabel(r'$M_\mathrm{\odot}$',fontsize=20)
 plt.ylabel('CCDF',fontsize=20)
-plt.text(0.01,0.01,'$R$ = %5.4f\n$p$ = %5.4f'%(R,p),ha='left',va='bottom',transform=fig.transAxes,fontsize=16)
+plt.text(0.01,0.01,r'$R = %5.4f, p = %5.4f$'%(R,p)+'\n'+r'$\alpha = %5.4f, M_\mathrm{o} = %5.4eM_mathrm{\odot}$'%(myfit.alpha,myfit.xmin),
+         ha='left',va='bottom',transform=fig.transAxes,fontsize=16)
 plt.savefig('./Disk/disk_power_law_mass.png')
 plt.close()

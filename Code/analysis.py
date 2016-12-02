@@ -364,12 +364,14 @@ def data (galaxyname,data,n_bins=1,r_nuc=0):
           plt.legend(loc=0)
           #plt.title(galaxyname+'Equal-mass Mass Distribution, bin '+repr(i+1))
           plt.ylim(ymin=10**-3)
-          plt.xlabel(r'$M_\mathrm{\odot}$')
-          plt.ylabel('CCDF')
+          plt.xlabel(r'$M_\mathrm{\odot}$',fontsize=20)
+          plt.ylabel('CCDF',fontsize=20)
           mpl.rc('xtick',labelsize=16)
           mpl.rc('ytick',labelsize=16)
           plt.text(0.01,0.5,subplot_label[i],ha='left',va='center',transform=fig.transAxes,fontsize=16)
-          plt.text(0.35,0.01,'$M_{bin}$ = %e $M_\mathrm{\odot}$\n$R_{gal}$ = %5.4f kpc to %5.4f kpc\n$R$ = %5.4f\n$p$ = %5.4f'%(totmass,inneredge[i],outeredge[i],R,p),ha='left',va='bottom',transform=fig.transAxes,fontsize=16)
+          plt.text(0.35,0.01,r'$M_{bin} = %e M_\mathrm{\odot}$'%(totmass)+'\n'+r'$R_{gal} = %5.4f kpc to %5.4f kpc$'%(inneredge[i],outeredge[i])+
+                   '\n'+r'$R = %5.4f, p = %5.4f$'%(R,p)+'\n'+r'$\alpha = %5.4f, M_\mathrm{o} = %5.4eM_\mathrm{\odot}$'%(myfit.alpha,myfit.xmin),
+                   ha='left',va='bottom',transform=fig.transAxes,fontsize=16)
           plt.savefig('../Data/'+galaxyname+'_power_law_equal_mass_'+repr(i+1)+'.png')
           plt.close()
 
@@ -391,12 +393,13 @@ def data (galaxyname,data,n_bins=1,r_nuc=0):
                plt.legend(loc=0)
                #plt.title(galaxyname+'Equal-area Mass Distribution, bin '+repr(i+1))
                plt.ylim(ymin=10**-3)
-               plt.xlabel(r'$M_\mathrm{\odot}$')
-               plt.ylabel('CCDF')
+               plt.xlabel(r'$M_\mathrm{\odot}$',fontsize=20)
+               plt.ylabel('CCDF',fontsize=20)
                mpl.rc('xtick',labelsize=16)
                mpl.rc('ytick',labelsize=16)
                plt.text(0.01,0.5,subplot_label[i],ha='left',va='center',transform=fig.transAxes,fontsize=16)
-               plt.text(0.35,0.01,'$R_{gal}$ = %5.4f kpc to %5.4f kpc\n$R$ = %5.4f\n$p$ = %5.4f'%(rgal_equiv[i],rgal_equiv[i+1],R,p),ha='left',va='bottom',transform=fig.transAxes,fontsize=16)
+               plt.text(0.35,0.01,r'$R_{gal} = %5.4f kpc to %5.4f kpc$'%(rgal_equiv[i],rgal_equiv[i+1])+'\n'+r'$R = %5.4f, p = %5.4f$'%(R,p)+'\n'+
+                        r'$\alpha = %5.4f, M_\mathrm{o} = %5.4eM_\mathrm{\odot}$'%(myfit.alpha,myfit.xmin),ha='left',va='bottom',transform=fig.transAxes,fontsize=16)
                plt.savefig('../Data/'+galaxyname+'_power_law_equal_area_'+repr(i+1)+'.png')
                plt.close()
 
