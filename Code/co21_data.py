@@ -183,7 +183,7 @@ lwo_disk_alike = np.concatenate((NGC3351_lwo_disk,NGC4254_lwo_disk,NGC4321_lwo_d
 
 # Histogram of the parameters.
 
-parameter_hist = plt.figure(figsize=(18,6))
+parameter_hist = plt.figure(figsize=(15,5))
 
 #alpha
 ax = plt.subplot(1,3,1)
@@ -216,18 +216,16 @@ plt.xlabel(r'$log_\mathrm{10}(\Sigma)$',fontsize=20)
 #lwo
 ax = plt.subplot(1,3,3)
 n,bins,patches = plt.hist(lwo_disk,bins=50,normed=True,alpha=0.6,facecolor='green')
-mw_param = maxwell.fit(lwo_disk)
-lwo_mu = maxwell.mean(*mw_param)
-lwo_std = maxwell.std(*mw_param)
-y = np.linspace(0,np.max(lwo_disk),1000)
-z = maxwell.pdf(y,*mw_param)
-plt.plot(y,z,'k--')
+lwo_mu = lwo_disk.mean()
+lwo_std = lwo_disk.std()
+y = mlab.normpdf(bins,lwo_mu,lwo_std)
+plt.plot(bins,y,'k--')
 mpl.rc('xtick',labelsize=16)
 mpl.rc('ytick',labelsize=16)
 plt.text(0.01,0.99,'(c)',ha='left',va='top',transform=ax.transAxes,fontsize=16)
 plt.text(0.99,0.99,'$\mu$ = %5.4f\n$\sigma$ = %5.4f'%(lwo_mu,lwo_std),ha='right',va='top',transform=ax.transAxes,fontsize=16)
 #plt.title('Galactic Disk Normalized Linewidth',fontsize=20)
-plt.xlabel(r'$\sigma_{o}$',fontsize=20)
+plt.xlabel(r'$log_\mathrm{10}(\sigma_{o})$',fontsize=20)
 
 plt.tight_layout()
 plt.savefig('./Disk/parameter_hist.png')
@@ -250,7 +248,7 @@ SFR = np.log10(SFR)
 depletion = np.delete(depletion,np.isnan(depletion))
 depletion = np.log10(depletion)
 
-formation_hist = plt.figure(figsize=(12,6))
+formation_hist = plt.figure(figsize=(10,5))
 
 ax = plt.subplot(1,2,1)
 n,bins,patches = plt.hist(SFR,bins=50,normed=True,log=False,alpha=0.6,facecolor='blue')
@@ -299,6 +297,7 @@ for i in range(len(galaxy_names)):
      galaxy_table[-1]['Number of GMCs'] = len(mass)
      galaxy_table[-1]['Number of disk GMCs'] = len(mass_dict[i])
      galaxy_table[-1]['R_nuc (kpc)'] = r_nuc[i]
+     print np.sum(mass_disk[i])
 
 galaxy_table.write('./Disk/galaxy_table.FITS',overwrite=True)
 

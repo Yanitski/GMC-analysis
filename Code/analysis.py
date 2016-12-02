@@ -25,7 +25,7 @@ def graphs (galaxyname,data):
 
      # Initialize a figure that can easily show three plots
      #arranged horizontally.
-     figure = plt.figure(figsize=(18,6))
+     figure = plt.figure(figsize=(15,5))
 
      # Create a subplot for the GMC luminous and virial masses.
      ax = plt.subplot(1,3,1)
@@ -104,7 +104,7 @@ def mapgmc (galaxyname,data,imgfile):
 
      # Display the image of the galaxy with markers showing the locations of the GMCs.
      img.show_colorscale(cmap='gist_heat')
-     img.show_markers(xval,yval,edgecolor='cyan',marker='D',s=10,alpha=1)
+     img.show_markers(xval,yval,edgecolor='cyan',marker='D',s=10,alpha=0.7)
 
      # Save the figure.
      img.save('../Maps/'+galaxyname+'_map.png')
@@ -154,7 +154,8 @@ def param (galaxyname,data,r_nuc=0):
      rad_sorted = radrms[i_sorted]
      alpha_sorted = np.log10(alpha[i_sorted])
      sigma_sorted = np.log10(sigma[i_sorted])
-     lwo_sorted = lwo[i_sorted]
+     lwo_sorted = np.log10(lwo[i_sorted])
+     #lwo_sorted = lwo[i_sorted]
      lw_sorted = lw[i_sorted]
      mass_disk = []      #mass of each disk GMC
      rad_disk = []       #radius of each disk GMC
@@ -183,7 +184,7 @@ def param (galaxyname,data,r_nuc=0):
      sigma_medians,bin_edges,binnumber = sps.binned_statistic(rgal,sigma,statistic=np.nanmedian,bins=[0,1,2,3,4,5,6,7,8,9,10,11])
 
      # Plot the parameters with respect to the galactocentric radius.
-     figure1 = plt.figure(figsize=(18,6))
+     figure1 = plt.figure(figsize=(15,5))
      
      ax = plt.subplot(1,3,1)
      l1 = plt.plot (rgal,alpha)
