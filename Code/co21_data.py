@@ -155,9 +155,9 @@ for i in range(len(galaxy_names)):
          sigma_table[-1][galaxy_names[j]] = stat_s
          lwo_table[-1][galaxy_names[j]] = stat_l
 
-alpha_table.write('./Disk/alpha_comparison.FITS',overwrite=True)
-sigma_table.write('./Disk/sigma_comparison.FITS',overwrite=True)
-lwo_table.write('./Disk/lwo_comparison.FITS',overwrite=True)
+alpha_table.write('./Disk/alpha_comparison.tex')
+sigma_table.write('./Disk/sigma_comparison.tex')
+lwo_table.write('./Disk/lwo_comparison.tex')
 
 ########################################################################################################################################
 #                                                      Galactic Disk GMC Analysis                                                      #
@@ -299,7 +299,7 @@ for i in range(len(galaxy_names)):
      galaxy_table[-1]['R_nuc (kpc)'] = r_nuc[i]
      print np.sum(mass_disk[i])
 
-galaxy_table.write('./Disk/galaxy_table.FITS',overwrite=True)
+galaxy_table.write('./Disk/galaxy_table.tex')
 
 # Fit all of the galactic disk GMC data in the power law and truncated-power-law distributions.
 
