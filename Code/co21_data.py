@@ -155,9 +155,9 @@ for i in range(len(galaxy_names)):
          sigma_table[-1][galaxy_names[j]] = stat_s
          lwo_table[-1][galaxy_names[j]] = stat_l
 
-alpha_table.write('./Disk/alpha comparison.FITS',overwrite=True)
-sigma_table.write('./Disk/sigma comparison.FITS',overwrite=True)
-lwo_table.write('./Disk/lwo comparison.FITS',overwrite=True)
+alpha_table.write('./Disk/alpha_comparison.FITS',overwrite=True)
+sigma_table.write('./Disk/sigma_comparison.FITS',overwrite=True)
+lwo_table.write('./Disk/lwo_comparison.FITS',overwrite=True)
 
 ########################################################################################################################################
 #                                                      Galactic Disk GMC Analysis                                                      #
