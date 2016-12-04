@@ -110,9 +110,9 @@ lwo_dict = (NGC0628_lwo_disk,NGC1672_lwo_disk,NGC3351_lwo_disk,NGC3627_lwo_disk,
 
 # Create a template for the comparison tables.
 
-column_names = ['Galaxies','NGC0628','NGC1672','NGC3351','NGC3627','NGC4254','NGC4303','NGC4321','NGC4535','NGC5068','NGC6744']
-galaxy_names = ['NGC0628','NGC1672','NGC3351','NGC3627','NGC4254','NGC4303','NGC4321','NGC4535','NGC5068','NGC6744']
-column_types = ['S7','f4','f4','f4','f4','f4','f4','f4','f4','f4','f4']
+column_names = ['NGC','0628','1672','3351','3627','4254','4303','4321','4535','5068','6744']
+galaxy_names = ['0628','1672','3351','3627','4254','4303','4321','4535','5068','6744']
+column_types = ['S4','f','f','f','f','f','f','f','f','f','f']
 alpha_table = Table(names=column_names,dtype=column_types)
 sigma_table = Table(names=column_names,dtype=column_types)
 lwo_table = Table(names=column_names,dtype=column_types)
@@ -123,9 +123,9 @@ for i in range(len(galaxy_names)):
     alpha_table.add_row()
     sigma_table.add_row()
     lwo_table.add_row()
-    alpha_table[-1]['Galaxies'] = galaxy_names[i]
-    sigma_table[-1]['Galaxies'] = galaxy_names[i]
-    lwo_table[-1]['Galaxies'] = galaxy_names[i]
+    alpha_table[-1]['NGC'] = galaxy_names[i]
+    sigma_table[-1]['NGC'] = galaxy_names[i]
+    lwo_table[-1]['NGC'] = galaxy_names[i]
     a = 0         #dummy variables for the unnecessary outputs from the tests
     b = [0]
     ca = 0
@@ -151,10 +151,16 @@ for i in range(len(galaxy_names)):
               stat_l,b,c = sp.stats.anderson_ksamp([li,lj])
          except OverflowError:
               stat_l,b,c = 50,None,None
+         stat_a = np.round(stat_a,decimals=2)
+         stat_s = np.round(stat_s,decimals=2)
+         stat_l = np.round(stat_l,decimals=2)
          alpha_table[-1][galaxy_names[j]] = stat_a
          sigma_table[-1][galaxy_names[j]] = stat_s
          lwo_table[-1][galaxy_names[j]] = stat_l
 
+alpha_table.write('./Disk/alpha_comparison.FITS',overwrite=True)
+sigma_table.write('./Disk/sigma_comparison.FITS',overwrite=True)
+lwo_table.write('./Disk/lwo_comparison.FITS',overwrite=True)
 alpha_table.write('./Disk/alpha_comparison.tex')
 sigma_table.write('./Disk/sigma_comparison.tex')
 lwo_table.write('./Disk/lwo_comparison.tex')
@@ -289,7 +295,7 @@ column_types = ['S7','f4',int,int,int,int]
 galaxy_table = Table(names=properties,dtype=column_types)
 
 for i in range(len(galaxy_names)):
-     datatable = Table.read(galaxy_names[i]+'_co21_cube_pbcor_props_clfind.fits')
+     datatable = Table.read('NGC'+galaxy_names[i]+'_co21_cube_pbcor_props_clfind.fits')
      mass = datatable['MASS_EXTRAP']
      galaxy_table.add_row()
      galaxy_table[-1]['Galaxy'] = galaxy_names[i]
@@ -299,6 +305,8 @@ for i in range(len(galaxy_names)):
      galaxy_table[-1]['Number of disk GMCs'] = len(mass_dict[i])
      galaxy_table[-1]['R_{nuc} (kpc)'] = r_nuc[i]
      print np.sum(mass_disk[i])
+
+galaxy_table.write('./Disk/galaxy_table.FITS',overwrite=True)
 
 galaxy_table.write('./Disk/galaxy_table.tex')
 
