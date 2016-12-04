@@ -31,7 +31,7 @@ def graphs (galaxyname,data):
      ax = plt.subplot(1,3,1)
      lines = plt.loglog (lmass,vmass,lmass,lmass)
      l1,l2 = lines
-     plt.setp(l1,marker='s',markersize=5,linestyle='None')
+     plt.setp(l1,marker='s',markersize=5,linestyle='None',alpha=0.7)
      plt.setp(l2,color='k',linestyle='solid',linewidth=3,alpha=0.5)
      plt.legend([l1,l2],[galaxyname,r'$M_{\mathrm{lum}}$'],loc=2)
      mpl.rc('xtick',labelsize=16)
@@ -45,7 +45,7 @@ def graphs (galaxyname,data):
      ax = plt.subplot(1,3,2)
      lines = plt.loglog(radius,lmass,radius,mcan)
      l1,l2 = lines
-     plt.setp(l1,marker='s',markersize=5,linestyle='None')
+     plt.setp(l1,marker='s',markersize=5,linestyle='None',alpha=0.7)
      plt.setp(l2,color='k',linestyle='solid',linewidth=3,alpha=0.5)
      plt.legend([l1,l2],[galaxyname,'Canonical Mass'],loc=2)
      mpl.rc('xtick',labelsize=16)
@@ -59,7 +59,7 @@ def graphs (galaxyname,data):
      ax = plt.subplot(1,3,3)
      lines = plt.loglog(radius,lw,radius,lwcan)
      l1,l2 = lines
-     plt.setp(l1,marker='s',markersize=5,linestyle='None')
+     plt.setp(l1,marker='s',markersize=5,linestyle='None',alpha=0.7)
      plt.setp(l2,color='k',linestyle='solid',linewidth=3,alpha=0.5)
      plt.legend([l1,l2],[galaxyname,'Canonical Linewidth'],loc=2)
      mpl.rc('xtick',labelsize=16)
@@ -189,7 +189,7 @@ def param (galaxyname,data,r_nuc=0):
      ax = plt.subplot(1,3,1)
      l1 = plt.plot (rgal,alpha)
      plt.yscale('log')
-     plt.setp (l1,marker='D',markersize=5,linestyle='None',color='b',label='GMC')
+     plt.setp (l1,marker='D',markersize=5,linestyle='None',color='b',label='GMC',alpha=0.7)
      plt.errorbar(binaxis,alpha_medians,xerr=0.5,linestyle='None',marker='o',color='k',lw=5,alpha=0.7,label='Median')
      plt.legend(loc=0)
      mpl.rc('xtick',labelsize=16)
@@ -202,7 +202,7 @@ def param (galaxyname,data,r_nuc=0):
      ax = plt.subplot(1,3,2)
      l1 = plt.plot(rgal,sigma)
      plt.yscale('log')
-     plt.setp (l1,marker='D',markersize=5,linestyle='None',color='b',label='GMC')
+     plt.setp (l1,marker='D',markersize=5,linestyle='None',color='b',label='GMC',alpha=0.7)
      plt.errorbar(binaxis,sigma_medians,xerr=0.5,linestyle='None',marker='o',color='k',lw=5,alpha=0.7,label='Median')
      plt.legend(loc=0)
      mpl.rc('xtick',labelsize=16)
@@ -214,14 +214,14 @@ def param (galaxyname,data,r_nuc=0):
      
      ax = plt.subplot(1,3,3)
      l1 = plt.plot(rgal,lwo)
-     plt.setp (l1,marker='D',markersize=5,linestyle='None',color='b',label='GMC')
+     plt.setp (l1,marker='D',markersize=5,linestyle='None',color='b',label='GMC',alpha=0.7)
      plt.errorbar(binaxis,lwo_medians,xerr=0.5,linestyle='None',marker='o',color='k',lw=5,alpha=0.7,label='Median')
      plt.legend(loc=0)
      mpl.rc('xtick',labelsize=16)
      mpl.rc('ytick',labelsize=16)
      plt.text(0.5,0.99,'(c)',ha='center',va='top',transform=ax.transAxes,fontsize=16)
      plt.xlabel(r'$R_g\ (\mathrm{kpc})$',fontsize=20)
-     plt.ylabel(r'$\sigma_{o}\ (\frac{\mathrm{km}}{\mathrm{s}})$',fontsize=20)
+     plt.ylabel(r'$\sigma_{0}\ (\frac{\mathrm{km}}{\mathrm{s}})$',fontsize=20)
      #plt.title('(c)',fontsize=20)
 
      plt.tight_layout()
@@ -230,9 +230,10 @@ def param (galaxyname,data,r_nuc=0):
 
      # Make a figure of the median mass for a given radius.
      figure2 = plt.figure(figsize=(8,8))
-     
-     plt.errorbar(binaxis,bin_means,xerr=0.5,linestyle='None',marker='D',color='b',label='Mean')
-     plt.errorbar(binaxis,bin_medians,xerr=0.5,linestyle='None',marker='D',color='g',label='Median')
+
+     plt.errorbar(binaxis,bin_means,xerr=0.5,linestyle='None',marker='D',color='b',label='Mean',alpha=0.7)
+     plt.errorbar(binaxis,bin_medians,xerr=0.5,linestyle='None',marker='D',color='g',label='Median',alpha=0.7)
+     plt.yscale('log')
      plt.legend(loc=0)
      mpl.rc('xtick',labelsize=16)
      mpl.rc('ytick',labelsize=16)
@@ -321,7 +322,8 @@ def data (galaxyname,data,n_bins=1,r_nuc=0):
      outeredge = np.concatenate((edges,[edge_f]))
 
      # Create a template for a new table.
-     column_names = ['Inner edge (kpc)', 'Outer edge (kpc)', 'GMC index', 'R', 'p', 'Truncation mass ($M_\mathrm{\odot}$)', 'Largest cloud ($M_\mathrm{\odot}$)', '5th largest cloud ($M_\mathrm{\odot}$)']
+     column_names = ['Inner edge (kpc)', 'Outer edge (kpc)', 'GMC index', 'R', 'p', 'Truncation mass ($M_\mathrm{\odot}$)',
+                     'Largest cloud ($M_\mathrm{\odot}$)', '5th largest cloud ($M_\mathrm{\odot}$)']
      column_types = ['f4', 'f4', 'f4', 'f4', 'f4', 'f4', 'f4', 'f4']
      table = Table(names=column_names, dtype=column_types)
 
@@ -332,15 +334,15 @@ def data (galaxyname,data,n_bins=1,r_nuc=0):
          mass = t['MASS_EXTRAP'][idx].data
          fit = powerlaw.Fit(mass)
          fit_subset = powerlaw.Fit(mass, xmin=3e5)
-         R,p = fit_subset.distribution_compare('power_law', 'truncated_power_law')
+         R,p = fit.distribution_compare('power_law', 'truncated_power_law')
          table.add_row()
          table[-1]['R'] = R
          table[-1]['p'] = p
-         table[-1]['GMC index'] = -fit_subset.alpha
+         table[-1]['GMC index'] = -fit.alpha
          table[-1]['Inner edge (kpc)'] = inneredge
          table[-1]['Outer edge (kpc)'] = outeredge
          table[-1]['Largest cloud ($M_\mathrm{\odot}$)'] = np.nanmax(mass)
-         table[-1]['Truncation mass ($M_\mathrm{\odot}$)'] = 1/fit_subset.truncated_power_law.parameter2
+         table[-1]['Truncation mass ($M_\mathrm{\odot}$)'] = 1/fit.truncated_power_law.parameter2
          table[-1]['5th largest cloud ($M_\mathrm{\odot}$)'] = np.sort(t['MASS_EXTRAP'][idx])[-5]
 
      # Write the data to a FITS file.
@@ -369,8 +371,8 @@ def data (galaxyname,data,n_bins=1,r_nuc=0):
           mpl.rc('xtick',labelsize=16)
           mpl.rc('ytick',labelsize=16)
           plt.text(0.01,0.5,subplot_label[i],ha='left',va='center',transform=fig.transAxes,fontsize=16)
-          plt.text(0.35,0.01,r'$M_{bin} = %e M_\mathrm{\odot}$'%(totmass)+'\n'+r'$R_{gal} = %5.4f kpc to %5.4f kpc$'%(inneredge[i],outeredge[i])+
-                   '\n'+r'$R = %5.4f, p = %5.4f$'%(R,p)+'\n'+r'$\alpha = %5.4f, M_\mathrm{o} = %5.4eM_\mathrm{\odot}$'%(myfit.alpha,myfit.xmin),
+          plt.text(0.35,0.01,r'$M_{bin}\ =\ %e M_\mathrm{\odot}$'%(totmass)+'\n'+r'$R_{gal}\ =\ %5.4f\ \mathrm{kpc}\ \mathrm{to}\ %5.4f\ \mathrm{kpc}$'%(inneredge[i],outeredge[i])+
+                   '\n'+r'$\mathrm{R}\ =\ %5.4f,\ \mathrm{p}\ =\ %5.4f$'%(R,p)+'\n'+r'$\alpha\ =\ %5.4f,\ M_\mathrm{0}\ =\ %5.4eM_\mathrm{\odot}$'%(-myfit.alpha,1/myfit.truncated_power_law.parameter2),
                    ha='left',va='bottom',transform=fig.transAxes,fontsize=16)
           plt.savefig('../Data/'+galaxyname+'_power_law_equal_mass_'+repr(i+1)+'.png')
           plt.close()
@@ -398,8 +400,9 @@ def data (galaxyname,data,n_bins=1,r_nuc=0):
                mpl.rc('xtick',labelsize=16)
                mpl.rc('ytick',labelsize=16)
                plt.text(0.01,0.5,subplot_label[i],ha='left',va='center',transform=fig.transAxes,fontsize=16)
-               plt.text(0.35,0.01,r'$R_{gal} = %5.4f kpc to %5.4f kpc$'%(rgal_equiv[i],rgal_equiv[i+1])+'\n'+r'$R = %5.4f, p = %5.4f$'%(R,p)+'\n'+
-                        r'$\alpha = %5.4f, M_\mathrm{o} = %5.4eM_\mathrm{\odot}$'%(myfit.alpha,myfit.xmin),ha='left',va='bottom',transform=fig.transAxes,fontsize=16)
+               plt.text(0.35,0.01,r'$R_{gal}\ =\ %5.4f\ \mathrm{kpc}\ \mathrm{to}\ %5.4f\ \mathrm{kpc}$'%(rgal_equiv[i],rgal_equiv[i+1])+
+                        '\n'+r'$\mathrm{R}\ =\ %5.4f,\ \mathrm{p}\ =\ %5.4f$'%(R,p)+'\n'+r'$\alpha\ =\ %5.4f,\ M_\mathrm{0}\ =\ %5.4eM_\mathrm{\odot}$'%(-myfit.alpha,1/myfit.truncated_power_law.parameter2),
+                        ha='left',va='bottom',transform=fig.transAxes,fontsize=16)
                plt.savefig('../Data/'+galaxyname+'_power_law_equal_area_'+repr(i+1)+'.png')
                plt.close()
 

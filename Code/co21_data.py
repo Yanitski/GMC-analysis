@@ -225,7 +225,7 @@ mpl.rc('ytick',labelsize=16)
 plt.text(0.01,0.99,'(c)',ha='left',va='top',transform=ax.transAxes,fontsize=16)
 plt.text(0.99,0.99,'$\mu$ = %5.4f\n$\sigma$ = %5.4f'%(lwo_mu,lwo_std),ha='right',va='top',transform=ax.transAxes,fontsize=16)
 #plt.title('Galactic Disk Normalized Linewidth',fontsize=20)
-plt.xlabel(r'$log_\mathrm{10}(\sigma_{o})$',fontsize=20)
+plt.xlabel(r'$log_\mathrm{10}(\sigma_{0})$',fontsize=20)
 
 plt.tight_layout()
 plt.savefig('./Disk/parameter_hist.png')
@@ -235,16 +235,17 @@ plt.close()
 
 SFR = []
 depletion = []
-T = 20
-mu = 0.61
-alpha_disk = 10**alpha_disk
+T = 10              #typical GMC temperature
+mu = 2.33           #typical GMC mean molecular mass
+alpha_disk = 10**alpha_disk        #remove the log nature of these values
 
-mach = 2.0727*(lw_disk)*((mu/0.61*20/T)**(0.5))
+mach = 5.7288*(lw_disk)*((mu/2.33*10/T)**(0.5))
 t_ff = (16.572*10**6)*(rad_disk**(1.5))*((mass_disk)**(-0.5))
 SFR = 0.014*mass_disk/t_ff*((alpha_disk/1.3)**(-0.68))*((mach/100)**(-0.32))
 depletion = mass_disk/SFR
 SFR = np.delete(SFR,np.isnan(SFR))
 SFR = np.log10(SFR)
+#remove the NaN results from the arrays
 depletion = np.delete(depletion,np.isnan(depletion))
 depletion = np.log10(depletion)
 
@@ -255,26 +256,26 @@ n,bins,patches = plt.hist(SFR,bins=50,normed=True,log=False,alpha=0.6,facecolor=
 SFR_mu = SFR.mean()
 SFR_std = SFR.std()
 y = mlab.normpdf(bins,SFR_mu,SFR_std)
-plt.plot(bins,y,'r--')
+plt.plot(bins,y,'k--')
 mpl.rc('xtick',labelsize=16)
 mpl.rc('ytick',labelsize=16)
 plt.text(0.01,0.99,'(a)',ha='left',va='top',transform=ax.transAxes,fontsize=16)
 plt.text(0.99,0.99,'$\mu$ = %5.4f\n$\sigma$ = %5.4f'%(SFR_mu,SFR_std),ha='right',va='top',transform=ax.transAxes,fontsize=16)
 #plt.title('Galactic Disk Star Formation Rate',fontsize=20)
-plt.xlabel(r'$log_\mathrm{10}(SFR) (\frac{M_\mathrm{\odot}}{yr})$',fontsize=20)
+plt.xlabel(r'$log_\mathrm{10}(SFR)$',fontsize=20)
 
 ax = plt.subplot(1,2,2)
 n,bins,patches = plt.hist(depletion,bins=50,normed=True,log=False,alpha=0.6,facecolor='blue')
 depletion_mu = depletion.mean()
 depletion_std = depletion.std()
 y = mlab.normpdf(bins,depletion_mu,depletion_std)
-plt.plot(bins,y,'r--')
+plt.plot(bins,y,'k--')
 mpl.rc('xtick',labelsize=16)
 mpl.rc('ytick',labelsize=16)
 plt.text(0.01,0.99,'(b)',ha='left',va='top',transform=ax.transAxes,fontsize=16)
 plt.text(0.99,0.99,'$\mu$ = %5.4f\n$\sigma$ = %5.4f'%(depletion_mu,depletion_std),ha='right',va='top',transform=ax.transAxes,fontsize=16)
 #plt.title('Galactic Disk Depletion Rate',fontsize=20)
-plt.xlabel(r'$log_\mathrm{10}(t_\mathrm{d}) (yr)$',fontsize=20)
+plt.xlabel(r'$log_\mathrm{10}(t_\mathrm{d})$',fontsize=20)
 
 plt.tight_layout()
 plt.savefig('./Disk/formation_hist.png')
@@ -315,7 +316,7 @@ mpl.rc('xtick',labelsize=16)
 mpl.rc('ytick',labelsize=16)
 plt.xlabel(r'$M_\mathrm{\odot}$',fontsize=20)
 plt.ylabel('CCDF',fontsize=20)
-plt.text(0.01,0.01,r'$R = %5.4f, p = %5.4f$'%(R,p)+'\n'+r'$\alpha = %5.4f, M_\mathrm{o} = %5.4eM_mathrm{\odot}$'%(myfit.alpha,myfit.xmin),
+plt.text(0.01,0.01,r'$\mathrm{R}\ =\ %5.4f,\ \mathrm{p}\ =\ %5.4f$'%(R,p)+'\n'+r'$\alpha\ =\ %5.4f,\ M_\mathrm{0}\ =\ %5.4eM_\mathrm{\odot}$'%(-myfit.alpha,1/myfit.truncated_power_law.parameter2),
          ha='left',va='bottom',transform=fig.transAxes,fontsize=16)
 plt.savefig('./Disk/disk_power_law_mass.png')
 plt.close()
